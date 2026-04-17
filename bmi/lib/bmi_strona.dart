@@ -11,6 +11,32 @@ class _BmiPageState extends State<BmiPage> {
 
   String result = "";
 
+  String bmiCategory(double bmi) {
+    if (bmi < 18.5) return "Niedowaga";
+    if (bmi < 25) return "Waga prawidłowa";
+    if (bmi < 30) return "Nadwaga";
+    return "Otyłość";
+  }
+
+  void calculateBMI() {
+    final h = double.tryParse(heightController.text);
+    final w = double.tryParse(weightController.text);
+
+    if (h == null || w == null || h <= 0 || w <= 0) {
+      setState(() {
+        result = "Wprowadź poprawne dane!";
+      });
+      return;
+    }
+
+    final bmi = w / ((h / 100) * (h / 100));
+    final category = bmiCategory(bmi);
+
+    setState(() {
+      result = "Twoje BMI: ${bmi.toStringAsFixed(2)}\n$category";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +56,6 @@ class _BmiPageState extends State<BmiPage> {
               ),
               const SizedBox(height: 20),
 
-              // Biała karta z cieniem
               Container(
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
@@ -47,10 +72,7 @@ class _BmiPageState extends State<BmiPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Wzrost (cm)",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    const Text("Wzrost (cm)", style: TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
 
                     TextField(
@@ -67,10 +89,7 @@ class _BmiPageState extends State<BmiPage> {
                     ),
                     const SizedBox(height: 15),
 
-                    const Text(
-                      "Waga (kg)",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    const Text("Waga (kg)", style: TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
 
                     TextField(
@@ -99,17 +118,7 @@ class _BmiPageState extends State<BmiPage> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        onPressed: () {
-                          final h = double.tryParse(heightController.text);
-                          final w = double.tryParse(weightController.text);
-
-                          if (h != null && w != null && h > 0) {
-                            final bmi = w / ((h / 100) * (h / 100));
-                            setState(() {
-                              result = "Twoje BMI: ${bmi.toStringAsFixed(2)}";
-                            });
-                          }
-                        },
+                        onPressed: calculateBMI,
                         child: const Text(
                           "Oblicz BMI",
                           style: TextStyle(fontSize: 18),
@@ -122,6 +131,7 @@ class _BmiPageState extends State<BmiPage> {
                     Center(
                       child: Text(
                         result,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
